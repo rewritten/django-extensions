@@ -150,10 +150,14 @@ class AutoSlugField(UniqueFieldMixin, SlugField):
             self._populate_from = (self._populate_from, )
         slug_field = model_instance._meta.get_field(self.attname)
 
-        if add or self.overwrite:
-            # slugify the original field content and set next step to 2
-            slug_for_field = lambda field: self.slugify_func(getattr(model_instance, field))
-            slug = self.separator.join(map(slug_for_field, self._populate_from))
+        if add or self.overwrite
+            if self.editable and getattr(model_instance, self.attname)):
+                # use current value of slug to start.
+                slug = getattr(model_instance, self.attname)
+            else:
+                # slugify the original field content and set next step to 2
+                slug_for_field = lambda field: self.slugify_func(getattr(model_instance, field))
+                slug = self.separator.join(map(slug_for_field, self._populate_from))
             start = 2
         else:
             # get slug from the current model instance
